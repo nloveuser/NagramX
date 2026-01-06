@@ -131,6 +131,7 @@
     <string name="GhostModeEnabled">Ghost mode turned on</string>
     <string name="GhostModeDisabled">Ghost mode turned off</string>
     <string name="GhostModeInDrawer">Show in Drawer</string>
+    <string name="GhostModeStatusIndicator">Ghost Mode Indicator</string>
     <string name="DontSendReadMessagePackets">Don\'t Read Messages</string>
     <string name="DontReadStoriesPackets">Don\'t Read Stories</string>
     <string name="DontSendOnlinePackets">Don\'t Send Online</string>
@@ -141,6 +142,8 @@
     <string name="MarkReadAfterSendNotice">Automatically reads message when you send a new one or tap a reaction.</string>
     <string name="SendWithoutSoundRowNotice">Automatically sends outgoing messages without sound.</string>
     <string name="GhostReadMessage">Read Message</string>
+    <string name="GhostModeExcludeRead">Exclude Read</string>
+    <string name="GhostModeExcludeTyping">Exclude Typing</string>
     <string name="SendWithSound">Send with Sound</string>
     <string name="PerformanceClass">Device Performance Class</string>
     <string name="PerformanceClassHigh">High</string>
@@ -274,4 +277,27 @@
     <string name="NoQuoteForwardShort">NoQuote</string>
     <string name="ForceEdgeToEdge">Force edge-to-edge</string>
     <string name="ViewDeleted">View Deleted</string>
+    <string name="PasskeyLogin">Passkey Login</string>
+    <string name="PasskeyInfo2">This feature only works with password managers that allow the user to manage trust settings for privileged apps, such as **Bitwarden** and **KeePassDX**.</string>
+    <string name="PasskeyUnsupportedTitle">Unsupported password manager</string>
+    <string name="PasskeyUnsupportedMessage">Try other password managers like **Bitwarden** or **KeePassDX**.</string>
+    <string name="PasskeyNoCredentialAvailable">No viable credential is available.</string>
+    <string name="BookmarksManager">Bookmarks</string>
+    <string name="AddBookmark">Bookmark</string>
+    <string name="RemoveBookmark">Remove bookmark</string>
+    <string name="BookmarkAdded">Added to **bookmarks**.</string>
+    <string name="BookmarkRemoved">Removed from **bookmarks**.</string>
+    <string name="BookmarksLimitReached">You can save up to %d messages per chat.</string>
+    <string name="BookmarksFilterUsers">Users</string>
+    <string name="NoBookmarks">No bookmarks</string>
+    <string name="ClearAllBookmarks">Clear All Bookmarks</string>
+    <string name="ClearAllBookmarksNotification">All bookmarks cleared.</string>
+    <string name="SortByUnread">Sort by Unread</string>
+    <string name="MediaSettings">Media</string>
+    <string name="CameraInVideoMessages">Camera in Video Messages</string>
+    <string name="CameraInVideoMessagesFront">Front Camera</string>
+    <string name="CameraInVideoMessagesRear">Rear Camera</string>
+    <string name="CameraInVideoMessagesAsk">Ask</string>
+    <string name="CameraSettings">Camera</string>
+    <string name="SmoothRoundedMenu">Smooth Rounded Context Menus</string>
 </resources>

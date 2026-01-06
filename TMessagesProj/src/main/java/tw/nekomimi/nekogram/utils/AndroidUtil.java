@@ -2,6 +2,7 @@ package tw.nekomimi.nekogram.utils;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -16,6 +17,7 @@ import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
@@ -34,6 +36,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import tw.nekomimi.nekogram.NekoConfig;
+import tw.nekomimi.nekogram.helpers.MessageHelper;
 import xyz.nextalone.nagram.NaConfig;
 
 public class AndroidUtil {
@@ -164,16 +167,21 @@ public class AndroidUtil {
     }
 
     public static void showErrorDialog(Exception e) {
+        showErrorDialog(e.getLocalizedMessage());
+    }
+
+    public static void showErrorDialog(String message) {
         var fragment = LaunchActivity.getSafeLastFragment();
-        var message = e.getLocalizedMessage();
         if (!BulletinFactory.canShowBulletin(fragment) || message == null) {
             return;
         }
-        if (message.length() > 45) {
-            AlertsCreator.showSimpleAlert(fragment, getString(R.string.ErrorOccurred), e.getMessage());
-        } else {
-            BulletinFactory.of(fragment).createErrorBulletin(message).show();
-        }
+        AndroidUtilities.runOnUIThread(() -> {
+            if (message.length() > 45) {
+                AlertsCreator.showSimpleAlert(fragment, getString(R.string.ErrorOccurred), message);
+            } else {
+                BulletinFactory.of(fragment).createSimpleBulletin(R.raw.error, message).show();
+            }
+        });
     }
 
     public static String getFileNameWithoutEx(String filename) {
@@ -223,5 +231,18 @@ public class AndroidUtil {
             return resources.getInteger(resourceId);
         }
         return 0;
+    }
+
+    public static boolean openForView(MessageObject message, Activity activity, Theme.ResourcesProvider resourcesProvider) {
+        File f = null;
+        String path = MessageHelper.getPathToMessage(message);
+        if (!TextUtils.isEmpty(path)) {
+            f = new File(path);
+        }
+        if (f == null || !f.exists()) {
+            return false;
+        }
+        String mimeType = message.type == MessageObject.TYPE_FILE || message.type == MessageObject.TYPE_TEXT ? message.getMimeType() : null;
+        return AndroidUtilities.openForView(f, message.getFileName(), mimeType, activity, resourcesProvider, false);
     }
 }
