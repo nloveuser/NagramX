@@ -2142,6 +2142,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private final static int gallery_menu_copy = 202;
     private final static int gallery_menu_set_photo = 203;
     private final static int gallery_menu_send_noquote = 204;
+    private final static int gallery_menu_copy_frame = 205;
 
     private static DecelerateInterpolator decelerateInterpolator;
     private static Paint progressPaint;
@@ -5735,6 +5736,22 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     } else {
                         showDownloadAlert();
                     }
+                } else if (id == gallery_menu_copy_frame) {
+                    if (videoPlayer == null) {
+                        return;
+                    }
+                    final long currentPosition = videoPlayer.getCurrentPosition();
+                    final MessageObject messageObject = currentMessageObject;
+                    final String videoPath = messageObject != null ? MessageHelper.getPathToMessage(messageObject) : null;
+                    final File videoFile = !TextUtils.isEmpty(videoPath) ? new File(videoPath) : null;
+                    MessageHelper.copyVideoFrameToClipboard(videoFile, currentPosition, containerView, resourcesProvider, () -> {
+                        if (captureCurrentVideoFrameToClipboard()) {
+                            return;
+                        }
+                        if (messageObject != null && currentMessageObject == messageObject) {
+                            showDownloadAlert();
+                        }
+                    });
                 } else if (id == gallery_menu_set_photo) {
                     File f = null;
                     if (currentMessageObject != null) {
@@ -5969,6 +5986,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         //menuItem.addSubItem(gallery_menu_edit_avatar, R.drawable.photo_paint, LocaleController.getString(R.string.EditPhoto)).setColors(0xfffafafa, 0xfffafafa);
 
         if (NaConfig.INSTANCE.getMediaViewerMenuItemCopyPhoto().Bool()) menuItem.addSubItem(gallery_menu_copy, R.drawable.msg_copy_photo, getString(R.string.CopyPhoto)).setColors(0xfffafafa, 0xfffafafa);
+        if (NaConfig.INSTANCE.getMediaViewerMenuItemCopyFrame().Bool()) menuItem.addSubItem(gallery_menu_copy_frame, R.drawable.msg_copy_photo, getString(R.string.CopyVideoFrame)).setColors(0xfffafafa, 0xfffafafa);
         if (NaConfig.INSTANCE.getMediaViewerMenuItemSetProfilePhoto().Bool()) menuItem.addSubItem(gallery_menu_set_photo, R.drawable.msg_openprofile, getString(R.string.SetProfilePhoto)).setColors(0xfffafafa, 0xfffafafa);
         if (NaConfig.INSTANCE.getMediaViewerMenuItemScanQRCode().Bool()) menuItem.addSubItem(gallery_menu_scan, R.drawable.msg_qrcode, getString(R.string.ScanQRCode)).setColors(0xfffafafa, 0xfffafafa);
 
@@ -14073,6 +14091,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         menuItem.hideSubItem(gallery_menu_edit_avatar);
         menuItem.hideSubItem(gallery_menu_set_as_main);
         menuItem.hideSubItem(gallery_menu_delete);
+        menuItem.hideSubItem(gallery_menu_copy_frame);
         speedItem.setVisibility(View.GONE);
         speedGap.setVisibility(View.GONE);
         videoItem.setVisibility(View.GONE);
@@ -14703,6 +14722,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         menuItem.hideSubItem(gallery_menu_masks2);
                     }
                     menuItem.hideSubItem(gallery_menu_copy);
+                    menuItem.showSubItem(gallery_menu_copy_frame);
                     menuItem.hideSubItem(gallery_menu_set_photo);
                     menuItem.checkHideMenuItem();
                 } else {
@@ -14711,6 +14731,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     speedGap.setVisibility(View.GONE);
                     menuItem.showSubItem(gallery_menu_openin);
                     menuItem.showSubItem(gallery_menu_copy);
+                    menuItem.hideSubItem(gallery_menu_copy_frame);
                     menuItem.showSubItem(gallery_menu_set_photo);
                     menuItem.checkHideMenuItem();
                     final boolean pipItemVisible = pipItem.getVisibility() == View.VISIBLE;
@@ -14741,6 +14762,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 galleryButton.setVisibility(View.GONE);
                 galleryGap.setVisibility(View.GONE);
                 menuItem.hideSubItem(gallery_menu_copy);
+                menuItem.hideSubItem(gallery_menu_copy_frame);
                 menuItem.hideSubItem(gallery_menu_set_photo);
                 menuItem.hideSubItem(gallery_menu_share);
                 menuItem.hideSubItem(gallery_menu_scan);
@@ -14867,6 +14889,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 menuItem.hideSubItem(gallery_menu_send_noquote);
                 menuItem.hideSubItem(gallery_menu_share);
                 menuItem.hideSubItem(gallery_menu_copy);
+                menuItem.hideSubItem(gallery_menu_copy_frame);
                 menuItem.hideSubItem(gallery_menu_set_photo);
                 menuItem.hideSubItem(gallery_menu_scan);
                 menuItem.hideSubItem(gallery_menu_paint2);
@@ -14887,6 +14910,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             galleryButton.setVisibility(View.GONE);
             galleryGap.setVisibility(View.GONE);
             menuItem.hideSubItem(gallery_menu_copy);
+            menuItem.hideSubItem(gallery_menu_copy_frame);
             menuItem.hideSubItem(gallery_menu_set_photo);
             menuItem.hideSubItem(gallery_menu_scan);
             menuItem.hideSubItem(gallery_menu_translate);
@@ -14902,6 +14926,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             if (index < 0 || index >= imagesArrLocations.size()) {
                 return;
             }
+            menuItem.hideSubItem(gallery_menu_copy_frame);
             menuItem.hideSubItem(gallery_menu_translate);
             menuItem.hideSubItem(gallery_menu_hide_translation);
             if (canEditAvatar && !avatarsArr.isEmpty()) {
@@ -14994,6 +15019,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             if (index < 0 || index >= imagesArrLocals.size()) {
                 return;
             }
+            menuItem.hideSubItem(gallery_menu_copy_frame);
             menuItem.hideSubItem(gallery_menu_translate);
             menuItem.hideSubItem(gallery_menu_hide_translation);
             Object object = imagesArrLocals.get(index);
@@ -23353,5 +23379,20 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         compressPhotoHint.setOnHiddenListener(() -> AndroidUtilities.removeFromParent(thisHint));
         compressPhotoHint.setDuration(3500);
         compressPhotoHint.show();
+    }
+
+    private boolean captureCurrentVideoFrameToClipboard() {
+        if (usedSurfaceView && videoSurfaceView != null && videoSurfaceView.getWidth() > 0 && videoSurfaceView.getHeight() > 0) {
+            Bitmap bitmap = Bitmaps.createBitmap(videoSurfaceView.getWidth(), videoSurfaceView.getHeight(), Bitmap.Config.ARGB_8888);
+            AndroidUtilities.getBitmapFromSurface(videoSurfaceView, bitmap, () -> MessageHelper.saveFrameBitmapToClipboard(bitmap, containerView, resourcesProvider));
+            return true;
+        } else if (videoTextureView != null && videoTextureView.getWidth() > 0 && videoTextureView.getHeight() > 0) {
+            Bitmap bitmap = videoTextureView.getBitmap();
+            if (bitmap != null) {
+                MessageHelper.saveFrameBitmapToClipboard(bitmap, containerView, resourcesProvider);
+                return true;
+            }
+        }
+        return false;
     }
 }
