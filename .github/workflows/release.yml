@@ -83,8 +83,8 @@ jobs:
           python-version: 3.12
       - name: Send to Telegram
         env:
-          APP_ID: ${{ secrets.APP_ID }}
-          APP_HASH: ${{ secrets.APP_HASH }}
+          APP_ID: ${{ secrets.API_ID }}
+          APP_HASH: ${{ secrets.API_HASH }}
           COMMIT_ID: ${{ github.event.head_commit.id }}
           COMMIT_URL: ${{ github.event.head_commit.url }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
