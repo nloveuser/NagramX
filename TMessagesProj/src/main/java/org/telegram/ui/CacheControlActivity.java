@@ -132,7 +132,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 
-import tw.nekomimi.nekogram.helpers.ChatNameHelper;
+import tw.nekomimi.nekogram.helpers.LocalNameHelper;
 import tw.nekomimi.nekogram.helpers.remote.EmojiHelper;
 import xyz.nextalone.nagram.helper.BookmarksHelper;
 
@@ -1319,7 +1319,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     progressDialog.setCanCancel(false);
                     progressDialog.show();
                     Utilities.globalQueue.postRunnable(() -> {
-                        ChatNameHelper.clearAllChatNameOverrides();
+                        LocalNameHelper.clearAllLocalNameOverrides();
                         AndroidUtilities.runOnUIThread(() -> {
                             progressDialog.dismiss();
                             BulletinFactory.of(CacheControlActivity.this).createSimpleBulletin(R.raw.done, getString(R.string.ResetChatNameNotification)).show();
